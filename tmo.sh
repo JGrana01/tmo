@@ -52,7 +52,7 @@ set_tmopwd() {
 	. "${SCRIPTDIR}/tmo.conf"
 
 	/usr/sbin/openssl version | awk '$2 ~ /(^0\.)|(^1\.(0\.|1\.0))/ { exit 1 }' && PWENC=-pbkdf2
-	if ! [ -f "${SCRIPTDIR}/tmopw.enc" ]; then
+	if  [ ! -f "${SCRIPTDIR}/tmopw.enc" ]; then
 		printf "\\n There is no password set for $USER - please set one now\\n"
 	else
 		echo
@@ -358,6 +358,7 @@ fi
 
 if [ $1 = "install" ];then
 	tmoinstall
+	touch "${SCRIPTDIR}/tmopw.enc"
 	exit 0
 fi
 

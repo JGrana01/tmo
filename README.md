@@ -3,7 +3,7 @@ Linux shell script to access and change some settings on T-Mobile Sagemcom Fast 
 
 This Linux shell script (tested on an Asuswrt-Merlin AX88U Pro) is based on a MS PowerShell scripts on Nate Taters YouTube channel.
 I converted it to a Linux shell scripts (with help from ChatGPT!) and added some additional commands to display the 5G/LTE radio information
-and overall gateway information
+and overall gateway information. Added thanks to @thelonelycoder on snbforums for the password encryption code!
 
 This script will allow you to enable/disable the WiFi radios (2.4 and 5Ghz). Helpful when running as just a modem in front of an Asus router.
 I also added a reboot command.
@@ -36,15 +36,17 @@ Options for Gateway
 
 8: Press '8' to show all Gateway information
 
-S: Press 'S' to Show WiFi Status.
+9: Press '9' to Show WiFi Status.
+
+P: Press 'P' to set/change TMO Gateway password
 
 Q: Press 'Q' to Quit.
 
 Please make a selection:
 
 
-It can also be called from another shell script. It knows its running non-interactive so you will need to first set the USER and PASS variables to the username and password.
-Sorry, it's in clear text in the script.
+It can also be called from another shell script. It knows its running non-interactive so you will need to first set the password foe the Gateway. tmo.sh will encrypt the password and store in the file ~tmo/tmopw.enc for use. You should only need to do this once, unless to change the default admin password on the Gateway itself.
+
 
 In this mode, you pass it a command (i.e. /jffs/scripts/tmo.sh status. All output except signals is sent to standard out
 
@@ -59,5 +61,9 @@ signals - retrieve signal status and store (silently) in /jffs/scripts/config.tx
 all - show all the gateway information - both WiFi and Radios
 
 reboot - reboot the Sagemcom Fast Gateway
+
+password - input the TMO Gateway admin password - needed for most commands
+
+install - create the directory /jffs/scripts/tmo, put tmo.sh there with a conf file and also create a link in /opt/bin to tmo.sh
 
 

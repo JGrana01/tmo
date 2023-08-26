@@ -11,7 +11,7 @@
 # location where configutration data is read from the Sagemcom and stored
 
 SCRIPTDIR="/jffs/scripts/tmo"
-SCRIPTVER="0.2"
+SCRIPTVER="0.2b"
 PWENC=-pbkdf2
 CONFIG="$SCRIPTDIR/config.txt"
 CONFIGC="$SCRIPTDIR/configc.txt"
@@ -107,6 +107,21 @@ gettmopwd() {
 		printf "\\nError - no password set for TMO Gateway\\n"
 		PASS=""
 	fi
+}
+
+tmoinstall() {
+	mkdir -p "${SCRIPTDIR}"
+	mv /jffs/scripts/tmo.sh "${SCRIPTDIR}"
+	init_tmo
+	printf "\\n\\n     tmo.sh     Version $SCRIPTVER\\n"
+	printf "\\ntmo.sh has been moved to $SCRIPTDIR and a link set in /opt/bin\\n"
+	printf "Before using tmo.sh the firt time, you will need to input the password to the Sagemcom Gateway\\n"
+	printf "The default password is printed on the label on the Gateway, under the default User (admin)\\n"
+	printf "unless you have changed the default gateway password via the TMobile Internet App\\n"
+	printf "Run tmo.sh with the password command:\\n\\n"
+	printf "   $ tmo.sh password\\n\\n"
+	printf "Unless you change the Gateway admin password, you only need to do this once. tmo.sh stores an\\n"
+	printf "encrypted version for use\\n\\n"
 }
 
 
@@ -341,6 +356,11 @@ if [ -z "$1" ]; then
 	exit 0
 fi
 
+if [ $1 = "install" ];then
+	tmoinstall
+	exit 0
+fi
+
 token
 
 if [ ! -f "${SCRIPTDIR}/tmo.conf" ] || [ ! -f "${SCRIPTDIR}/tmopw.enc" ]; then
@@ -394,18 +414,7 @@ case "$1" in
 		exit 0
 		;;
 	install)
-		mkdir -p "${SCRIPTDIR}"
-		mv /jffs/scripts/tmo.sh "${SCRIPTDIR}"
-		init_tmo
-		printf "\\n\\n     tmo.sh     Version $SCRIPTVER\\n"
-		printf "\\ntmo.sh has been moved to $SCRIPTDIR and a link set in /opt/bin\\n"
-		printf "Before using tmo.sh the firt time, you will need to input the password to the Sagemcom Gateway\\n"
-		printf "The default password is printed on the label on the Gateway, under the default User (admin)\\n"
-		printf "unless you have changed the default gateway password via the TMobile Internet App\\n"
-		printf "Run tmo.sh with the password command:\\n\\n"
-		printf "   $ tmo.sh password\\n\\n"
-		printf "Unless you change the Gateway admin password, you only need to do this once. tmo.sh stores an\\n"
-		printf "encrypted version for use\\n\\n"
+		tmoinstall
 		exit 0
 		;;
 esac

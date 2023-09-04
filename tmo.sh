@@ -17,7 +17,7 @@
 SCRIPTNAME="tmo"
 
 SCRIPTDIR="/jffs/addons/$SCRIPTNAME"
-SCRIPTVER="0.4"
+SCRIPTVER="0.6"
 PWENC=-pbkdf2
 CONFIG="$SCRIPTDIR/config.txt"
 CONFIGC="$SCRIPTDIR/configc.txt"
@@ -288,6 +288,25 @@ verifypw() {
 		;;
    		255)
 			display_info "You will need to set a correct password before using the program..." 6 20 2
+		;;
+		esac
+	fi
+}
+verifypwi() {
+	config
+	if [ $(grep -c "Authorization" $CONFIG ) -gt 0 ]; then
+		echo "The password was rejected by the Gateway. Try to change it? (Y or N)"
+		read response
+		case $response in
+   		Y|y)
+	 		set_tmopwdi ;;
+   		N|n)
+			echo "Ok. You will need to set a correct password before using the program..."
+			exit 1
+		;;
+   		*)
+			echo "You will need to set a correct password before using the program..."
+			exit 1
 		;;
 		esac
 	fi
@@ -742,6 +761,7 @@ fi
 . "${SCRIPTDIR}/tmo.conf"
 gettmopwd
 token
+verifypwi
 
 case "$1" in
 	config)
@@ -809,6 +829,10 @@ case "$1" in
 	uninstall)
 		tmouninstall
 		exit 0
+		;;
+	*)
+		echo "Unknown command"
+		exit 1
 		;;
 esac
 

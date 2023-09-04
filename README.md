@@ -26,7 +26,7 @@ To run in menu mode, just invoke without any command line argument:
 
 $ tmo
 
-![image](https://github.com/JGrana01/tmo/assets/11652784/b62b41a1-8229-41f6-8cc6-45829b56b86c)
+![image](https://github.com/JGrana01/tmo/assets/11652784/c5f064b5-8923-4ffd-8c8e-3bcec2a2a0a4)
 
 
 To run in script mode, pass an argument. I.e.:

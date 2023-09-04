@@ -1,6 +1,7 @@
 # tmo.sh
 Linux shell script to access and change some settings on T-Mobile Sagemcom Fast 5688W Gateway
 
+## About
 This Linux shell script (tested on an Asuswrt-Merlin AX88U Pro) is based on a MS PowerShell scripts on Nate Taters YouTube channel.
 I converted it to a Linux shell scripts (with help from ChatGPT!) and added some additional commands to display the 5G/LTE radio information
 and overall gateway information. Added thanks to @thelonelycoder on snbforums for the password encryption code!
@@ -9,6 +10,14 @@ This script will allow you to enable/disable the WiFi radios (2.4 and 5Ghz). Hel
 I also added a reboot command.
 
 I found that when my download speeds got low (less than 12 Mbits/sec.) a reboot of the Sagemcom usually got it back to 100Mbit+.
+
+## Installation
+
+For Asuswrt-merlin based routers, using your preferred SSH client/terminal, copy and paste the following command, then press Enter:
+
+/usr/sbin/curl --retry 3 "https://raw.githubusercontent.com/JGrana01/tmo/master/tmo.sh" -o "/jffs/scripts/tmo.sh" && chmod 0755 /jffs/scripts/tmo.sh && /jffs/scripts/tmo.sh install
+
+## Using
 
 The script runs either in a dialog based menu mode or in a script mode.
 To run in menu mode, just invoke without any command line argument:

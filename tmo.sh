@@ -17,7 +17,7 @@
 SCRIPTNAME="tmo"
 
 SCRIPTDIR="/jffs/addons/$SCRIPTNAME"
-SCRIPTVER="0.6"
+SCRIPTVER="0.8"
 PWENC=-pbkdf2
 CONFIG="$SCRIPTDIR/config.txt"
 CONFIGC="$SCRIPTDIR/configc.txt"
@@ -35,7 +35,7 @@ GREEN="\Z2"
 DIALOG_CANCEL=1
 DIALOG_ESC=255
 DIALOG_QUIT="Q"
-HEIGHT=17
+HEIGHT=19
 WIDTH=0
 
 display_result() {
@@ -392,11 +392,19 @@ tmoinstall() {
 EOF
 }
 
-tmouninstall() {
+removetmo() {
+	rm -rf "${SCRIPTDIR}"
+	rm -f /jffs/scripts/tmo.sh
+	if [ -d /opt/bin ]; then
+		rm -f /opt/bin/tmo
+	fi
+}
 
+tmouninstall() {
 	printf "\\n Uninstall tmo and it's data/directort? [Y=Yes] ";read -r continue
 	case "$continue" in
 		Y|y) printf "\\n Uninstalling...\\n"
+	           removetmo
 		   rm -rf "${SCRIPTDIR}"
                    rm -f /jffs/scripts/tmo.sh
                    if [ -d /opt/bin ]; then
@@ -449,6 +457,7 @@ while true; do
   "P" "Set Password Used to Access Gateway" \
   "R" "Reboot Gateway" \
   "Q" "Press Q to Quit" \
+  "U" "Uninstall tmo" \
     2>&1 1>&3)
   exit_status=$?
   exec 3>&-
@@ -556,6 +565,26 @@ while true; do
         clear
         exit
       ;;
+    U )
+	dialog --title "Uninstall tmo" \
+	--defaultno \
+	--yesno "Are you sure you want to uninstall tmo and all it's files ?" 7 60
+	response=$?
+	case $response in
+   	0)
+	   display_info "Uninstalling..." 4 20 3
+	   removetmo
+	   display_info "tmo uninstalled, exiting" 4 35 2
+	   clear
+	   exit
+	;;
+   	1)
+	   display_info "tmo not removed" 5 20 2
+	;;
+   	255)
+	   display_info "tmo not removed" 5 20 2
+        ;;
+	esac
    esac
 done
 }

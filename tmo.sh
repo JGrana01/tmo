@@ -148,7 +148,7 @@ getbars() {
 
 
 wifistate() {
-	status
+	tmostatus
 	if [ $(grep $1 $RADIOS | grep -c Enabled) -gt 0 ]; then
 		if [ $2 = "0" ]; then
 			echo "ON"
@@ -595,7 +595,7 @@ reboot() {
   curl -s -m 1 -X POST -H "$HEADER" 'http://192.168.12.1/TMI/v1/gateway/reset?set=reboot' -d "Content-Length: 0"
 }
 
-status() {
+tmostatus() {
   config
   if [ $(grep "2.4ghz" $CONFIGC | grep -c "isRadioEnabled:true") -gt 0 ]; then
 	echo "2.4 GHz WiFi Enabled" > $RADIOS
@@ -615,10 +615,42 @@ wifisettingswait() {
   status
 }
 
-printhelp() {
+setradio() {
+	if [ $1 = "2.4" ]; then
+		if [ $2 = "off" ]; then
+			wifioff24
+		elif [ $2 = "on" ]; then
+			wifion24
+		else
+			echo "Wrong value off or on"
+			exit 1
+		fi
+	elif [ $1 = "5" ]; then
+		if [ $2 = "off" ]; then
+			wifioff5
+		elif [ $2 = "on" ]; then
+			wifion5
+		else
+			echo "Wrong value off or on"
+			exit 1
+		fi
+	else
+		echo "Wrong radio 2.4 or 5"
+	
+	fi
+}
 
+			
+
+printhelp() {
 	cat <<EOF
-tmo provides either a menu based system by running without any command line
+
+tmo is a utility that is used to manage a T-Mobile Sagemcom Gateway
+It can display information on the WiFi or LTE/5G radios and also enable or disable
+the WiFi radios.
+I also provides a reboot command.
+
+tmo runs either a menu based system by running without any command line
 arguments or in script mode where it will return results of a command or do an
 action on the command.
 To run in menu mode, just type:
@@ -628,6 +660,11 @@ $ tmo
 In scripts mode, enter an argument:
 
 $ tmo arg
+
+EOF
+echo "More.. (press Enter)"
+read a
+cat <<EOF
 
 The list of script arguments are:
 
@@ -647,6 +684,8 @@ password - set/change the password used to access the Gateway
            tmo uses to access the Gateway
 
 reboot - will issue a reboot command to the Gateway
+
+radio [2.4|5] [off|on] - turn off or on the 2.4GHz or 5GHz radios
 
 help - show this help info
 	
@@ -701,6 +740,8 @@ if [ ! -f "${SCRIPTDIR}/tmo.conf" ] || [ ! -f "${SCRIPTDIR}/tmopw.enc" ]; then
 fi
 
 . "${SCRIPTDIR}/tmo.conf"
+gettmopwd
+token
 
 case "$1" in
 	config)
@@ -709,8 +750,17 @@ case "$1" in
 		cat $CONFIG
 		exit 0
 		;;
+	radio)
+		if [ "$#" -eq "3" ]; then
+			setradio $2 $3
+		else
+			 echo "wrong syntax: tmo radio [2.4 or 5] [off or on]"
+			 exit 1
+		fi
+		exit 0
+		;;
 	status)
-		signal
+		tmostatus
 		cat $RADIOS
 		logger -t "tmo.sh" "Received WiFi status"
 		exit 0

@@ -348,12 +348,14 @@ gettmopwd() {
 }
 
 tmoinstall() {
+	echo "Creating script director "${SCRIPTDIR}"
 	mkdir -p "${SCRIPTDIR}"
 	if [ ! -x /opt/bin/opkg ]; then
 		printf "\\ntmo requires Entware to be installed\\n"
 		printf "\\nInstall Entware using amtm and run tmo.sh install\\n\\n"
 		exit
 	else
+		echo "Checking for and installing required apps"
 		opkg update
 		for app in dialog jq column; do
 			if [ ! -x /opt/bin/$app ]; then
@@ -364,6 +366,7 @@ tmoinstall() {
 	fi
 	init_tmo
 	cat <<EOF
+
 	     tmo.sh     Version $SCRIPTVER
 	tmo.sh has been copied to $SCRIPTDIR and a link set in /opt/bin as tmo
 	You can run it from /jffs/scripts/tmo.sh or /opt/bin/tmo. If /opt/bin is in

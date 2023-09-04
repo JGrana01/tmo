@@ -6,10 +6,12 @@ This Linux shell script (tested on an Asuswrt-Merlin AX88U Pro) is based on a MS
 I converted it to a Linux shell scripts (with help from ChatGPT!) and added some additional commands to display the 5G/LTE radio information
 and overall gateway information. Added thanks to @thelonelycoder on snbforums for the password encryption code!
 
+It supports a menuing system based on Linux dialog or can be run with arguemnts as a script.
+
 This script will allow you to enable/disable the WiFi radios (2.4 and 5Ghz). Helpful when running as just a modem in front of an Asus router.
 I also added a reboot command.
 
-I found that when my download speeds got low (less than 12 Mbits/sec.) a reboot of the Sagemcom usually got it back to 100Mbit+.
+I found that when my download speeds got low (less than 12 Mbits/sec.) a reboot of the Sagemcom ($ tmo reboot) usually got it back to 100Mbit+.
 
 ## Installation
 
@@ -23,6 +25,9 @@ The script runs either in a dialog based menu mode or in a script mode.
 To run in menu mode, just invoke without any command line argument:
 
 $ tmo
+
+![image](https://github.com/JGrana01/tmo/assets/11652784/b62b41a1-8229-41f6-8cc6-45829b56b86c)
+
 
 To run in script mode, pass an argument. I.e.:
 

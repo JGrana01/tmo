@@ -17,7 +17,7 @@
 SCRIPTNAME="tmo"
 
 SCRIPTDIR="/jffs/addons/$SCRIPTNAME"
-SCRIPTVER="0.8"
+SCRIPTVER="0.9"
 PWENC=-pbkdf2
 CONFIG="$SCRIPTDIR/config.txt"
 CONFIGC="$SCRIPTDIR/configc.txt"
@@ -348,7 +348,7 @@ gettmopwd() {
 }
 
 tmoinstall() {
-	echo "Creating script director "${SCRIPTDIR}"
+	echo "Creating script directory ${SCRIPTDIR}"
 	mkdir -p "${SCRIPTDIR}"
 	if [ ! -x /opt/bin/opkg ]; then
 		printf "\\ntmo requires Entware to be installed\\n"

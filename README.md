@@ -34,6 +34,8 @@ signals - retrieve signal status and store (silently) in /jffs/addons/tmo/config
 
 all - show all the gateway information - both WiFi and Radios
 
+radio [2.4|5] [off|on] - turn the 2.4Ghz or 5Ghz WiFi radios off or on
+
 reboot - reboot the Sagemcom Fast Gateway
 
 password - input the TMO Gateway admin password - needed for most commands

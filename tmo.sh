@@ -350,28 +350,17 @@ gettmopwd() {
 tmoinstall() {
 	mkdir -p "${SCRIPTDIR}"
 	if [ ! -x /opt/bin/opkg ]; then
-		printf "\\nThe menu version of tmo requires Entware to be installed\\n"
-		printf "The script version does not\\n"
-		printf "\\Install as script only [Y] or [N]? "
-		read answer
-		case $answer in
-			Y|y )
-				printf "\\nInstalling in script only mode\\n"
-			;;
-			N|n )
-				printf "\\nInstall Entware using amtm and run tmo.sh install\\n\\n"
-				exit
-			;;
-			* )
-				exit
-			;;
-		esac
+		printf "\\ntmo requires Entware to be installed\\n"
+		printf "\\nInstall Entware using amtm and run tmo.sh install\\n\\n"
+		exit
 	else
-		if [ ! -x /opt/bin/dialog ]; then
-			echo "Installing dialog to /opt/bin"
-			opkg update
-			opkg install dialog
-		fi
+		opkg update
+		for app in dialog jq column; do
+			if [ ! -x /opt/bin/$app ]; then
+				echo "Installing $app to /opt/bin"
+				opkg install $app
+			fi
+		done
 	fi
 	init_tmo
 	cat <<EOF

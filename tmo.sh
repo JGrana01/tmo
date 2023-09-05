@@ -17,10 +17,11 @@
 SCRIPTNAME="tmo"
 
 SCRIPTDIR="/jffs/addons/$SCRIPTNAME"
-SCRIPTVER="0.9"
+SCRIPTVER="0.9.2"
 PWENC=-pbkdf2
 CONFIG="$SCRIPTDIR/config.txt"
 CONFIGC="$SCRIPTDIR/configc.txt"
+CONFIGP="$SCRIPTDIR/configp.txt"
 RADIOS="$SCRIPTDIR/radios.txt"
 
 # dialog text formatting
@@ -131,10 +132,12 @@ write_tmo_config() {
 
 
 getbars() {
-	bars5=$(grep -m 2 "bars" $CONFIGC | tail -1 | sed 's/bars //')
-	band5=$(grep -m 2 "bands" $CONFIGC | tail -1 | sed 's/bands //')
-	bars24=$(grep -m 2 "bars" $CONFIGC | head -1 | sed 's/bars //')
-	band24=$(grep -m 2 "bands" $CONFIGC | head -1 | sed 's/bands //')
+
+	bars24=$(jq '.signal."4g".bars' $CONFIG)
+	bars5=$(jq '.signal."5g".bars' $CONFIG)
+	band24=$(grep -m 2 "bands" $CONFIGC | head -1 | sed 's/bands        //')
+	band5=$(grep -m 2 "bands" $CONFIGC | tail -1 | sed 's/bands        //')
+
 	if [ ! -z "$1" ]; then
 		if [ "$1" = "A" ]; then
                   monbar="$bars24"
@@ -145,6 +148,24 @@ getbars() {
 		fi
 	fi
 }
+
+printbars() {
+
+	printf "\\n\\n     Signal Strength \\n\\n"
+      	while true
+      	do
+         	signal
+	 	getbars 
+		bar24=$(expr $bars24 \* 20)
+		bar5=$(expr $bars5 \* 20)
+	 	printf "\\r 4G LTE$band24: $(expr $bars24 \* 20)%%      5G$band5: $(expr $bars5 \* 20)%%  "
+         	if read -r -t 3; then
+            		printf "\\n\\n"
+			return
+        	fi
+       done
+}
+
 
 
 wifistate() {
@@ -483,15 +504,15 @@ while true; do
     4 )
       selectband
       if [ "$barsm" = "A" ]; then
-             bandtitle="2.4GHz   Band:"
+             bandtitle="2.4GHz Band:"
       else
-             bandtitle="5GHz   Band:"
+             bandtitle="5GHz Band:"
       fi
       while true
       do
          signal
 	 getbars "$barsm"
-	 echo $(expr $monbar \* 20) | dialog --keep-window --title "$bandtitl $monband" \
+	 echo $(expr $monbar \* 20) | dialog --keep-window --title "$bandtitle$monband" \
          --guage "Press Enter to exit..." 7 70 0
          if read -r -t 3; then
             clear
@@ -612,6 +633,7 @@ pause() {
 
 convertConfig() {
   cat $CONFIG | tr "," "\n" | tr -d "^ " | sed 's/\"//g' | sed 's/:/|/' | sed 's/{//g' | sed 's/}//g' | column -t -s "|" > $CONFIGC
+  jq '.' $CONFIG > $CONFIGP
 }
 
 config() {
@@ -637,12 +659,12 @@ reboot() {
 
 tmostatus() {
   config
-  if [ $(grep "2.4ghz" $CONFIGC | grep -c "isRadioEnabled:true") -gt 0 ]; then
+  if [ $(jq '."2.4ghz".isRadioEnabled' $CONFIG) = "true" ]; then
 	echo "2.4 GHz WiFi Enabled" > $RADIOS
   else
 	echo "2.4 GHz Wifi Disabled" > $RADIOS
   fi
-  if [ $(grep "5.0ghz" $CONFIGC | grep -c "isRadioEnabled:true") -gt 0 ]; then
+  if [ $(jq '."5.0ghz".isRadioEnabled' $CONFIG) = "true" ]; then
 	echo "5.0 GHz WiFi Enabled" >> $RADIOS
   else
 	echo "5.0 GHz WiFi Disabled" >> $RADIOS
@@ -727,6 +749,8 @@ reboot - will issue a reboot command to the Gateway
 
 radio [2.4|5] [off|on] - turn off or on the 2.4GHz or 5GHz radios
 
+bars - show both WAN radio signal strength (as a %)
+
 help - show this help info
 	
 install - setup the script directory, copy the program, link to /opt/bin (if its
@@ -788,7 +812,7 @@ case "$1" in
 	config)
 		config
 		logger -t "tmo.sh" "Received config"
-		cat $CONFIG
+		cat $CONFIGP
 		exit 0
 		;;
 	radio)
@@ -820,6 +844,7 @@ case "$1" in
 	all)
 		logger -t "tmo.sh" "Getting all TMO Gateway status"
 		gwall
+		cat $CONFIGP
         	exit 0
 		;;
 	reboot)
@@ -849,6 +874,10 @@ case "$1" in
 		;;
 	uninstall)
 		tmouninstall
+		exit 0
+		;;
+	bars)
+		printbars
 		exit 0
 		;;
 	*)

@@ -17,7 +17,7 @@
 SCRIPTNAME="tmo"
 
 SCRIPTDIR="/jffs/addons/$SCRIPTNAME"
-SCRIPTVER="0.9.2"
+SCRIPTVER="0.9.3"
 PWENC=-pbkdf2
 CONFIG="$SCRIPTDIR/config.txt"
 CONFIGC="$SCRIPTDIR/configc.txt"
@@ -724,7 +724,7 @@ In scripts mode, enter an argument:
 $ tmo arg
 
 EOF
-echo "More.. (press Enter)"
+echo "More.. press Enter to continue"
 read a
 cat <<EOF
 
@@ -838,7 +838,7 @@ case "$1" in
 		;;
 	signals)  # signal silent
 		signal
-		logger -t "tmo.sh" "Received Signal status (silent)"
+		logger -t "tmo.sh" "Received Signal status silent"
          	exit 0
 		;;
 	all)
